@@ -121,12 +121,14 @@ async def test_gemini_extract_success():
     
     try:
         images = [base64.b64encode(b"fake image").decode("utf-8")]
-        mock_model = Mock()
+        mock_client = Mock()
+        mock_models = Mock()
         mock_response = Mock()
         mock_response.text = '{"documentType": "Invoice", "vendorName": "Test", "totalAmount": 100, "date": "2024-01-15"}'
-        mock_model.generate_content = Mock(return_value=mock_response)
+        mock_models.generate_content = Mock(return_value=mock_response)
+        mock_client.models = mock_models
         
-        with patch("backend.extraction.genai.GenerativeModel", return_value=mock_model):
+        with patch("backend.extraction.genai.Client", return_value=mock_client):
             with patch("backend.extraction.Image"):
                 result = await gemini_extract(images)
                 

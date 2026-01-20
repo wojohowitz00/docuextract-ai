@@ -191,7 +191,7 @@ async def list_extractions_endpoint(
 @app.get("/api/extractions/export")
 async def export_extractions_endpoint(
     extraction_ids: Optional[str] = Query(None, description="Comma-separated extraction IDs"),
-    format: str = Query("csv", regex="^(csv|parquet)$")
+    format: str = Query("csv", pattern="^(csv|parquet)$")
 ):
     """Export extractions to CSV or Parquet"""
     global db_conn

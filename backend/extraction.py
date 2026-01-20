@@ -6,14 +6,12 @@ from typing import Dict, Any, Optional, List
 from PIL import Image
 import io
 import ollama
-import google.generativeai as genai
+from google import genai
 from .models import ExtractedData, DocumentType
 
 
 # Initialize Gemini client
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-if GEMINI_API_KEY:
-    genai.configure(api_key=GEMINI_API_KEY)
 
 
 EXTRACTION_PROMPT = """
@@ -127,7 +125,7 @@ async def gemini_extract(images: List[str], prompt: str = EXTRACTION_PROMPT) -> 
         raise ValueError("GEMINI_API_KEY not set")
     
     try:
-        model = genai.GenerativeModel("gemini-2.5-flash-image")
+        client = genai.Client(api_key=GEMINI_API_KEY)
         
         # Convert base64 to PIL Images for Gemini
         image_parts = []
@@ -136,8 +134,16 @@ async def gemini_extract(images: List[str], prompt: str = EXTRACTION_PROMPT) -> 
             img = Image.open(io.BytesIO(img_bytes))
             image_parts.append(img)
         
-        # Gemini can handle multiple images
-        response = model.generate_content([prompt] + image_parts)
+        # Build content with images
+        contents = [prompt]
+        for img in image_parts:
+            contents.append(img)
+        
+        # Use the new genai API
+        response = client.models.generate_content(
+            model="gemini-2.5-flash-image",
+            contents=contents
+        )
         
         text = response.text
         if not text:
