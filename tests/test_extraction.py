@@ -6,7 +6,6 @@ from backend.extraction import (
     calculate_confidence,
     parse_json_response,
     ollama_extract,
-    gemini_extract,
     extract_document
 )
 
@@ -110,56 +109,8 @@ async def test_ollama_extract_failure():
 
 
 @pytest.mark.asyncio
-async def test_gemini_extract_success():
-    """Test successful Gemini extraction"""
-    import os
-    import backend.extraction
-    
-    original_key = os.environ.get("GEMINI_API_KEY")
-    os.environ["GEMINI_API_KEY"] = "test-key"
-    backend.extraction.GEMINI_API_KEY = "test-key"  # Update module-level variable
-    
-    try:
-        images = [base64.b64encode(b"fake image").decode("utf-8")]
-        mock_client = Mock()
-        mock_models = Mock()
-        mock_response = Mock()
-        mock_response.text = '{"documentType": "Invoice", "vendorName": "Test", "totalAmount": 100, "date": "2024-01-15"}'
-        mock_models.generate_content = Mock(return_value=mock_response)
-        mock_client.models = mock_models
-        
-        with patch("backend.extraction.genai.Client", return_value=mock_client):
-            with patch("backend.extraction.Image"):
-                result = await gemini_extract(images)
-                
-                assert result["provider"] == "gemini"
-                assert result["confidence"] > 0
-                assert result["data"]["vendorName"] == "Test"
-    finally:
-        if original_key:
-            os.environ["GEMINI_API_KEY"] = original_key
-            backend.extraction.GEMINI_API_KEY = original_key
-        elif "GEMINI_API_KEY" in os.environ:
-            del os.environ["GEMINI_API_KEY"]
-            backend.extraction.GEMINI_API_KEY = None
-
-
-@pytest.mark.asyncio
-async def test_gemini_extract_no_api_key():
-    """Test Gemini extraction without API key"""
-    import os
-    if "GEMINI_API_KEY" in os.environ:
-        del os.environ["GEMINI_API_KEY"]
-    
-    images = [base64.b64encode(b"fake image").decode("utf-8")]
-    
-    with pytest.raises(ValueError, match="GEMINI_API_KEY not set"):
-        await gemini_extract(images)
-
-
-@pytest.mark.asyncio
 async def test_extract_document_ollama_success():
-    """Test document extraction with Ollama success"""
+    """Test document extraction with Ollama"""
     file_bytes = b"fake pdf content"
     filename = "test.pdf"
     
@@ -182,49 +133,7 @@ async def test_extract_document_ollama_success():
     
     with patch("backend.pdf_parser.parse_document", return_value=mock_parsed):
         with patch("backend.extraction.ollama_extract", return_value=mock_ollama_result):
-            result = await extract_document(file_bytes, filename, prefer_local=True)
+            result = await extract_document(file_bytes, filename)
             
             assert result["provider"] == "ollama"
             assert result["confidence"] == 0.9
-
-
-@pytest.mark.asyncio
-async def test_extract_document_gemini_fallback():
-    """Test document extraction falling back to Gemini"""
-    import os
-    file_bytes = b"fake pdf content"
-    filename = "test.pdf"
-    
-    mock_parsed = {
-        "file_type": "pdf",
-        "images": [base64.b64encode(b"fake image").decode("utf-8")],
-        "image_count": 1
-    }
-    
-    mock_gemini_result = {
-        "data": {
-            "documentType": "Invoice",
-            "vendorName": "Test",
-            "totalAmount": 100,
-            "date": "2024-01-15"
-        },
-        "confidence": 0.85,
-        "provider": "gemini"
-    }
-    
-    original_key = os.environ.get("GEMINI_API_KEY")
-    os.environ["GEMINI_API_KEY"] = "test-key"
-    
-    try:
-        with patch("backend.pdf_parser.parse_document", return_value=mock_parsed):
-            with patch("backend.extraction.ollama_extract", side_effect=Exception("Ollama failed")):
-                with patch("backend.extraction.gemini_extract", return_value=mock_gemini_result):
-                    result = await extract_document(file_bytes, filename, prefer_local=True)
-                    
-                    assert result["provider"] == "gemini"
-                    assert result["confidence"] == 0.85
-    finally:
-        if original_key:
-            os.environ["GEMINI_API_KEY"] = original_key
-        elif "GEMINI_API_KEY" in os.environ:
-            del os.environ["GEMINI_API_KEY"]

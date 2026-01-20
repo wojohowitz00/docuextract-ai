@@ -71,7 +71,7 @@ def test_health_check(client):
         data = response.json()
         assert data["status"] == "ok"
         assert isinstance(data["ollama_available"], bool)
-        assert isinstance(data["gemini_available"], bool)
+        assert "gemini_available" not in data
 
 
 def test_extract_endpoint_success(client, sample_pdf_file):

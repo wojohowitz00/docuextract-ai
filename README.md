@@ -7,7 +7,7 @@ A local-first financial document extraction tool that converts invoices, receipt
 **Current Stack:**
 - **Frontend**: React 19 + TypeScript + Vite
 - **Backend**: FastAPI (Python) - *Coming soon*
-- **LLM**: Ollama (Qwen2-VL-7B) with Gemini Flash fallback
+- **LLM**: Ollama (Qwen3-VL) - local-only processing
 - **Storage**: DuckDB (local database)
 - **PDF Processing**: PyMuPDF, pdfplumber, pdf2image
 
@@ -51,7 +51,7 @@ The backend API is implemented and ready to use. Frontend has been updated to us
    brew install poppler
    ```
 
-3. **Install Ollama and pull Qwen2-VL model:**
+3. **Install Ollama and pull Qwen3-VL model:**
    ```bash
    # Install Ollama
    brew install ollama  # macOS
@@ -61,16 +61,14 @@ The backend API is implemented and ready to use. Frontend has been updated to us
    ollama serve
    
    # In another terminal, pull the vision model
-   ollama pull qwen2-vl:7b
+   ollama pull qwen3-vl
    ```
 
 4. **Set up environment variables (optional):**
    ```bash
    # Create .env file
-   echo "GEMINI_API_KEY=your_key_here" > .env
-   echo "VITE_BACKEND_URL=http://localhost:8000" >> .env
+   echo "VITE_BACKEND_URL=http://localhost:8000" > .env
    ```
-   Note: Gemini API key is optional - used as fallback if Ollama is unavailable.
 
 5. **Install frontend dependencies:**
    ```bash
@@ -96,7 +94,7 @@ The backend API is implemented and ready to use. Frontend has been updated to us
 
 ## Development Roadmap
 
-1. ✅ Frontend MVP with Gemini API
+1. ✅ Frontend MVP
 2. ✅ Backend API with FastAPI
 3. ✅ Local LLM integration (Ollama)
 4. ✅ DuckDB storage

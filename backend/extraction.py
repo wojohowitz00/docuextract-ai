@@ -1,17 +1,9 @@
-"""LLM extraction module with Ollama + Gemini fallback"""
-import os
+"""LLM extraction module using local Ollama"""
 import json
 import base64
-from typing import Dict, Any, Optional, List
-from PIL import Image
-import io
+from typing import Dict, Any, List
 import ollama
-from google import genai
 from .models import ExtractedData, DocumentType
-
-
-# Initialize Gemini client
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 
 EXTRACTION_PROMPT = """
@@ -119,62 +111,16 @@ async def ollama_extract(images: List[str], prompt: str = EXTRACTION_PROMPT) -> 
         raise ValueError(f"Ollama extraction failed: {e}")
 
 
-async def gemini_extract(images: List[str], prompt: str = EXTRACTION_PROMPT) -> Dict[str, Any]:
-    """Extract data using Gemini API"""
-    if not GEMINI_API_KEY:
-        raise ValueError("GEMINI_API_KEY not set")
-    
-    try:
-        client = genai.Client(api_key=GEMINI_API_KEY)
-        
-        # Convert base64 to PIL Images for Gemini
-        image_parts = []
-        for img_base64 in images:
-            img_bytes = base64.b64decode(img_base64)
-            img = Image.open(io.BytesIO(img_bytes))
-            image_parts.append(img)
-        
-        # Build content with images
-        contents = [prompt]
-        for img in image_parts:
-            contents.append(img)
-        
-        # Use the new genai API
-        response = client.models.generate_content(
-            model="gemini-2.5-flash-image",
-            contents=contents
-        )
-        
-        text = response.text
-        if not text:
-            raise ValueError("No response from Gemini")
-        
-        extracted = parse_json_response(text)
-        
-        # Calculate confidence
-        confidence = calculate_confidence(extracted)
-        
-        return {
-            "data": extracted,
-            "confidence": confidence,
-            "provider": "gemini"
-        }
-    except Exception as e:
-        raise ValueError(f"Gemini extraction failed: {e}")
-
-
 async def extract_document(
     file_bytes: bytes,
-    filename: str,
-    prefer_local: bool = True
+    filename: str
 ) -> Dict[str, Any]:
     """
-    Extract document data with Ollama + Gemini fallback
+    Extract document data using local Ollama
     
     Args:
         file_bytes: Raw file bytes
         filename: Original filename
-        prefer_local: Try Ollama first if True
     
     Returns:
         Dict with extracted data, confidence, and provider
@@ -189,20 +135,5 @@ async def extract_document(
     
     images = parsed["images"]
     
-    # Try local Ollama first if preferred
-    if prefer_local:
-        try:
-            result = await ollama_extract(images)
-            # If confidence is good enough, return it
-            if result["confidence"] >= 0.8:
-                return result
-        except Exception:
-            # Fall through to Gemini
-            pass
-    
-    # Fallback to Gemini
-    try:
-        return await gemini_extract(images)
-    except Exception as e:
-        # If both fail, raise error
-        raise ValueError(f"All extraction methods failed. Last error: {e}")
+    # Use local Ollama
+    return await ollama_extract(images)

@@ -61,8 +61,7 @@ async def health_check():
     """Health check endpoint"""
     status = {
         "status": "ok",
-        "ollama_available": False,
-        "gemini_available": bool(os.getenv("GEMINI_API_KEY"))
+        "ollama_available": False
     }
     
     # Check Ollama availability
@@ -120,9 +119,9 @@ async def extract_endpoint(file: UploadFile = File(...)):
             "duplicate": True
         }
     
-    # Extract data
+    # Extract data using local Ollama
     try:
-        result = await extract_document(file_bytes, file.filename, prefer_local=True)
+        result = await extract_document(file_bytes, file.filename)
         extracted_data = result["data"]
         confidence = result["confidence"]
         provider = result["provider"]
