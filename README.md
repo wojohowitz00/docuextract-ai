@@ -23,30 +23,85 @@ A local-first financial document extraction tool that converts invoices, receipt
 
 ## Project Status
 
-**Phase**: Backend Implementation (See [Implementation Plan](./fluttering-snuggling-comet.md))
+**Phase**: Backend Complete - Ready for Testing
 
-The frontend is functional and currently uses direct Gemini API calls. The backend is being implemented according to the architecture plan.
+The backend API is implemented and ready to use. Frontend has been updated to use the backend API.
 
 ## Quick Start
 
-### Frontend (Current)
+### Prerequisites
 
-```bash
-npm install
-npm run dev
-```
+- Python 3.11+
+- Node.js 18+
+- [uv](https://github.com/astral-sh/uv) package manager
+- [Ollama](https://ollama.com) (for local LLM)
+- Poppler (for PDF to image conversion)
 
-### Backend (In Progress)
+### Setup
 
-See [fluttering-snuggling-comet.md](./fluttering-snuggling-comet.md) for detailed implementation steps.
+1. **Install Python dependencies:**
+   ```bash
+   uv venv
+   source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+   uv pip install -e .
+   ```
+
+2. **Install Poppler (macOS):**
+   ```bash
+   brew install poppler
+   ```
+
+3. **Install Ollama and pull Qwen2-VL model:**
+   ```bash
+   # Install Ollama
+   brew install ollama  # macOS
+   # or: curl -fsSL https://ollama.com/install.sh | sh  # Linux
+   
+   # Start Ollama server
+   ollama serve
+   
+   # In another terminal, pull the vision model
+   ollama pull qwen2-vl:7b
+   ```
+
+4. **Set up environment variables (optional):**
+   ```bash
+   # Create .env file
+   echo "GEMINI_API_KEY=your_key_here" > .env
+   echo "VITE_BACKEND_URL=http://localhost:8000" >> .env
+   ```
+   Note: Gemini API key is optional - used as fallback if Ollama is unavailable.
+
+5. **Install frontend dependencies:**
+   ```bash
+   npm install
+   ```
+
+### Running the Application
+
+1. **Start the backend:**
+   ```bash
+   source .venv/bin/activate
+   ./run_backend.sh
+   # Or: uvicorn backend.main:app --reload --host 0.0.0.0 --port 8000
+   ```
+
+2. **Start the frontend (in another terminal):**
+   ```bash
+   npm run dev
+   ```
+
+3. **Open your browser:**
+   Navigate to `http://localhost:5173` (or the port shown by Vite)
 
 ## Development Roadmap
 
 1. ✅ Frontend MVP with Gemini API
-2. 🔄 Backend API with FastAPI
-3. 🔄 Local LLM integration (Ollama)
-4. 🔄 DuckDB storage
-5. 🔄 Correction & learning system
+2. ✅ Backend API with FastAPI
+3. ✅ Local LLM integration (Ollama)
+4. ✅ DuckDB storage
+5. ✅ Frontend integration
+6. 🔄 Correction & learning system (planned)
 
 ## License
 

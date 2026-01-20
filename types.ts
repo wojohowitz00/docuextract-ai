@@ -37,6 +37,7 @@ export interface UploadedFile {
   base64Data: string;
   status: FileStatus;
   extractedData?: ExtractedData | null;
+  extractionId?: string;
   errorMessage?: string;
   uploadTimestamp: number;
 }

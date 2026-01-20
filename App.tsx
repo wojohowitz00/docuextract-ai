@@ -2,11 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import FileUpload from './components/FileUpload';
 import ResultsTable from './components/ResultsTable';
 import FileSidebar from './components/FileSidebar';
-import { extractDataFromDocument } from './services/geminiService';
+import { extractDocument } from './services/backendService';
 import { UploadedFile } from './types';
-import JSZip from 'jszip'; // Note: You might need to add this to importmap if you want true zip, but for now we will just sequentially download or implementation alert. 
-// Since I cannot add packages easily in this format without prompt, I will implement a sequential download for "Download All" or a merged CSV.
-// Let's do a merged CSV for simplicity and no external dependencies.
 
 const MAX_CONCURRENT_UPLOADS = 2;
 
@@ -29,8 +26,15 @@ const App: React.FC = () => {
       setFiles(prev => prev.map(f => f.id === nextFile.id ? { ...f, status: 'processing' } : f));
 
       try {
-        const data = await extractDataFromDocument(nextFile.base64Data, nextFile.file.type);
-        setFiles(prev => prev.map(f => f.id === nextFile.id ? { ...f, status: 'complete', extractedData: data } : f));
+        const response = await extractDocument(nextFile.file);
+        setFiles(prev => prev.map(f => 
+          f.id === nextFile.id ? { 
+            ...f, 
+            status: 'complete', 
+            extractedData: response.data,
+            extractionId: response.id 
+          } : f
+        ));
       } catch (error: any) {
         console.error(`Error processing ${nextFile.file.name}:`, error);
         setFiles(prev => prev.map(f => f.id === nextFile.id ? { 
