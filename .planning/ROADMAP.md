@@ -43,12 +43,12 @@ DocuExtract AI has completed its core extraction pipeline and web frontend. The 
   3. No dead code or empty directories remain
   4. Test suite passes with meaningful coverage
   5. User can filter and browse past extractions
-**Plans**: TBD
+**Plans**: 3 plans in 2 waves
 
 Plans:
-- [ ] 03-01: End-to-end testing across all 7 document types
-- [ ] 03-02: Documentation overhaul (docs/PRD.md, docs/README.md, docs/TODO.md)
-- [ ] 03-03: Code cleanup (stale models, empty dirs, reconcile schemas)
+- [ ] 03-01: Fix and validate test suite (Wave 1)
+- [ ] 03-02: Documentation overhaul — update PRD, README, TODO, AGENTS (Wave 1)
+- [ ] 03-03: Code cleanup — remove dead dirs, consolidate models (Wave 2, depends on 03-01)
 
 ### Phase 4: Correction System
 **Goal**: User can correct extraction errors and system learns from corrections
