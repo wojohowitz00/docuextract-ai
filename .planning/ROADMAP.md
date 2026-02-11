@@ -58,12 +58,12 @@ Plans:
   1. User can edit extracted fields in the UI
   2. Corrections are saved and override original extraction
   3. System uses correction patterns to improve future extractions
-**Plans**: TBD
+**Plans**: 3 plans in 2 waves
 
 Plans:
-- [ ] 04-01: Correction data model and storage
-- [ ] 04-02: Correction UI in React frontend
-- [ ] 04-03: Pattern learning from corrections
+- [ ] 04-01: Backend corrections support — updates & audit trail (Wave 1)
+- [ ] 04-02: Frontend inline editing — refactor ResultsTable & add edit mode (Wave 2, depends on 04-01)
+- [ ] 04-03: Learning system — pattern storage & application logic (Wave 2, depends on 04-01)
 
 ## Progress
 
