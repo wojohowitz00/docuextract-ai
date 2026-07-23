@@ -7,6 +7,7 @@ name = "docuextract-ai"
 version = "0.1.0"
 description = "Local-first document extraction with vision LLMs"
 requires-python = ">=3.11"
+readme = "README.md"
 dependencies = [
     "fastapi>=0.115.0",
     "uvicorn[standard]>=0.34.0",
@@ -20,6 +21,10 @@ dependencies = [
     "pydantic>=2.0.0",
     "pillow>=10.0.0",
 ]
+
+[project.urls]
+Repository = "https://github.com/wojohowitz00/docxtractor"
+Homepage = "https://github.com/wojohowitz00/docxtractor"
 
 [tool.setuptools]
 packages = ["backend"]

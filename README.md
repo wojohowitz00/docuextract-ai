@@ -6,7 +6,7 @@ A local-first financial document extraction tool that converts invoices, receipt
 
 **Current Stack:**
 - **Frontend**: React 19 + TypeScript + Vite
-- **Backend**: FastAPI (Python) - *Coming soon*
+- **Backend**: FastAPI (Python)
 - **LLM**: Ollama (Qwen3-VL) - local-only processing
 - **Storage**: DuckDB (local database)
 - **PDF Processing**: PyMuPDF, pdfplumber, pdf2image
@@ -23,9 +23,9 @@ A local-first financial document extraction tool that converts invoices, receipt
 
 ## Project Status
 
-**Phase**: Backend Complete - Ready for Testing
+**Phase**: Testing & Polish (Phase 3 of 4)
 
-The backend API is implemented and ready to use. Frontend has been updated to use the backend API.
+Backend API and frontend integration are complete. Extraction pipeline (OCR → classify → extract), DuckDB storage, and CSV export work end-to-end. Current focus: testing, polish, and the planned correction & learning system (Phase 4).
 
 ## Quick Start
 
@@ -100,6 +100,10 @@ The backend API is implemented and ready to use. Frontend has been updated to us
 4. ✅ DuckDB storage
 5. ✅ Frontend integration
 6. 🔄 Correction & learning system (planned)
+
+## Repository
+
+https://github.com/wojohowitz00/docxtractor
 
 ## License
 

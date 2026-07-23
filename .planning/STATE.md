@@ -56,7 +56,7 @@ None yet.
 - `models/schemas.py` has old EOB-specific Pydantic models not used by current backend — needs cleanup or reconciliation
 - `docs/` folder (PRD.md, README.md, TODO.md) still describes old EOB-only scope
 - Empty directories (`extractor/`, `gui/`, `database/`) contain only `__pycache__/`
-- No remote git repository configured yet (`git push` requires upstream)
+- Remote: https://github.com/wojohowitz00/docxtractor.git (set with `git remote set-url origin https://github.com/wojohowitz00/docxtractor.git` if needed)
 
 ## Session Continuity
 
